@@ -9,6 +9,9 @@ The unit was designed to be driven by the **Arduino Mega 2560** development boar
 The circuit schematic for the unit is as shown here:
 ![alt text](https://github.com/WillScottJackson/DarkglassMidiFootswitch/blob/main/MIDI-Switch_schem.png?raw=true)
 
+In terms of user interface, I didn't want a generic MIDI footswitch type of interface, instead I wanted something specific to the Microtubes 900 V2, and try to make it intuitive for when I'm using for recording, rehearsing or playing live. I opted to use a mixture of an LCD, RBG LEDs and footswitches to do all of the neccesary interactions. 
+
+
 ## Demonstration
 A quick and dirty Youtube video of this unit in action has been uploaded [here](https://www.youtube.com/watch?v=9cLe0gX9iao)
 
