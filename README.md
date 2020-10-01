@@ -6,3 +6,10 @@ This was a project of mine while on furlough during the COVID 19 pandemic. I wan
 
 ## Design 
 The unit was designed to be driven by the **Arduino Mega 2560** development board, due to having numerous hardware interrupt pins available. In order to make this a responsive unit in a studio environment, hardware interrupts were preferable for real time switching of new MIDI messages rather than continuous polling of all the switches. I decided to put and LCD for some feedback, with the option to have the unit programmable at a later date. 
+The circuit schematic for the unit is as shown here:
+![alt text](https://github.com/WillScottJackson/DarkglassMidiFootswitch/blob/main/MIDI-Switch_schem.png?raw=true)
+
+## Demonstration
+A quick and dirty Youtube video of this unit in action has been uploaded [here](https://www.youtube.com/watch?v=9cLe0gX9iao)
+
+
