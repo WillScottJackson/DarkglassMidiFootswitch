@@ -9,30 +9,23 @@
 * to the Darkglass Microtubes 900 V2 MIDI mapping I have set up, so the UI will be labelled as such. 
 */
 
-#include "Footswitch.h"
+#include <LiquidCrystal_I2C.h>
 #include "MIDI.h"
 #include "RGBLED.h"
 #include <Wire.h>
 #include "RGBLED.h"
 #include "Hardware_Defs.h"
+#include "FlexPrimeMidiCCDefs.h"
 
-enum ImpulseSlot 
-{
-    IMPULSE_SLOT_1 = 0, 
-    IMPULSE_SLOT_2 = 1, 
-    IMPULSE_SLOT_3 = 2, 
-    BYPASS = 3
-};
 
 RGBLED RGBLEDs[4];
-Footswitch Footswitches[2];
+//Footswitch Footswitches[2];
 
 MIDI midi = MIDI();
 
 uint8_t nCurrentMIDIChannel = 1;
 uint8_t nCurrentPCValue = 6;
 uint8_t nLEDBrightness = 127;
-ImpulseSlot eCurrentImpulse = IMPULSE_SLOT_2;
 uint8_t nCurrentImpluse = 1;
 bool bCompressorOn = true;
 
@@ -65,14 +58,14 @@ void setup()
     StartupSequence();
     delay(1500);
     
-    attachInterrupt(digitalPinToInterrupt(nFootswitch1), HandleFootSwitch1, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(nFootswitch2), HandleFootSwitch2, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(nFootswitch3), HandleFootSwitch3, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(nFootswitch4), HandleFootSwitch4, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(HardwareDefinitions::Footswitches::Footswitch1), HandleFootSwitch1, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(HardwareDefinitions::Footswitches::Footswitch2), HandleFootSwitch2, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(HardwareDefinitions::Footswitches::Footswitch3), HandleFootSwitch3, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(HardwareDefinitions::Footswitches::Footswitch4), HandleFootSwitch4, CHANGE);
 
     // Footswitches 5 and 6 are not connected to interrupt pins, so they need to be polled
-    pinMode(nFootswitch5, INPUT);
-    pinMode(nFootswitch6, INPUT);
+    pinMode(HardwareDefinitions::Footswitches::Footswitch5, INPUT);
+    pinMode(HardwareDefinitions::Footswitches::Footswitch6, INPUT);
 
     // Mute the footswitch by default 
     HandleFootSwitch1();
@@ -83,24 +76,15 @@ void setup()
 
 void InitLEDs()
 {
-    RGBLED CRGBLED1 = RGBLED(nRedPin1, nGreenPin1, nBluePin1);
-    RGBLED CRGBLED2 = RGBLED(nRedPin2, nGreenPin2, nBluePin2);
-    RGBLED CRGBLED3 = RGBLED(nRedPin3, nGreenPin3, nBluePin3);
-    RGBLED CRGBLED4 = RGBLED(nRedPin4, nGreenPin4, nBluePin4);
+    RGBLED CRGBLED1 = RGBLED(HardwareDefinitions::LEDs::LED1);
+    RGBLED CRGBLED2 = RGBLED(HardwareDefinitions::LEDs::LED2);
+    RGBLED CRGBLED3 = RGBLED(HardwareDefinitions::LEDs::LED3);
+    RGBLED CRGBLED4 = RGBLED(HardwareDefinitions::LEDs::LED4);
 
     RGBLEDs[0] = CRGBLED1;
     RGBLEDs[1] = CRGBLED2;
     RGBLEDs[2] = CRGBLED3;
     RGBLEDs[3] = CRGBLED4;
-}
-
-void InitFootswitches()
-{
-    Footswitch Switch5 = Footswitch(nFootswitch5);
-    Footswitch Switch6 = Footswitch(nFootswitch6);
-
-    Footswitches[0] = Switch5;
-    Footswitches[1] = Switch6;
 }
 
 void ZeroLEDs()
@@ -172,7 +156,7 @@ void HandleFootSwitch1()
 
     UpdateLEDStates();
     GetMIDIPCValue();
-    delay(DEBOUNCE_TIME);
+    delay(HardwareDefinitions::HardwareTiming::DebounceTime);
 }
 
 void HandleFootSwitch2()
@@ -181,7 +165,7 @@ void HandleFootSwitch2()
 
     UpdateLEDStates();
     GetMIDIPCValue();
-    delay(DEBOUNCE_TIME);
+    delay(HardwareDefinitions::HardwareTiming::DebounceTime);
 }
 
 void HandleFootSwitch3()
@@ -190,22 +174,21 @@ void HandleFootSwitch3()
 
     UpdateLEDStates();
     GetMIDIPCValue();
-    delay(DEBOUNCE_TIME);
+    delay(HardwareDefinitions::HardwareTiming::DebounceTime);
 }
 
 void HandleFootSwitch4()
 {   
     nLastPressedSwitch = 3;
-
     UpdateLEDStates();
     GetMIDIPCValue();
-    delay(DEBOUNCE_TIME);
+    delay(HardwareDefinitions::HardwareTiming::DebounceTime);
 }
 
 // Tap to scroll presets left, hold for 1.5 seconds to switch to CC mode 
 void HandleFootSwitch5()
 {
-    if ((digitalRead(nFootswitch5) == HIGH) && (bHoldingSwitch5 == false))
+    if ((digitalRead(HardwareDefinitions::Footswitches::Footswitch5) == HIGH) && (bHoldingSwitch5 == false))
     {
         // Move to the next impulse slot, 
         nCurrentImpluse++;
@@ -216,7 +199,7 @@ void HandleFootSwitch5()
         GetMIDIPCValue();
         UpdateLEDStates();
         
-        delay(DEBOUNCE_TIME);
+        delay(HardwareDefinitions::HardwareTiming::DebounceTime);
     }
     else
     {
@@ -226,14 +209,14 @@ void HandleFootSwitch5()
 
 void HandleFootSwitch6()
 {
-    if (digitalRead(nFootswitch6) == HIGH)
+    if (digitalRead(HardwareDefinitions::Footswitches::Footswitch6) == HIGH)
     {
         bCompressorOn = !bCompressorOn;
         UpdateDisplay();
         GetMIDIPCValue();
         UpdateLEDStates();
     }
-    delay(DEBOUNCE_TIME);
+    delay(HardwareDefinitions::HardwareTiming::DebounceTime);
 }
 
 void UpdateLEDStates()
